@@ -24,11 +24,18 @@ Entrez.email = args.user_email
 # accession id works, returns genbank format, looks in the 'nucleotide' database:
 def get_genbank(extension):
 	for i in args.accession_ids:
-		handle=Entrez.efetch(db='nucleotide', id=i, rettype='gb')
-		with open(i+'.'+extension, 'w') as output_file:
-			output_file.write(handle.read())
+		try:
+			handle=Entrez.efetch(db='nucleotide', id=i, rettype='gb')
+# 			if handle != None:
+			with open(i+'.'+extension, 'w') as output_file:
+				print 'downloading '+i+' to '+i+'.'+extension
+				output_file.write(handle.read())
+		except:
+			print 'Accession number '+i+' not found'
+			continue
+
 		handle.close()
-		
+
 #sets up the file extension (suffix)
 def set_suffix(suffix):
 	if suffix == None:
@@ -37,9 +44,9 @@ def set_suffix(suffix):
 	else:
 		extension = suffix.replace('.', '')
 		get_genbank(extension)
-	
+
 #executes the set_suffix() function, which in turn executes the get_genbank() function
 set_suffix(args.file_suffix)
 
 length = len(args.accession_ids)
-print '\nDone.   Check \'pwd\' for', length, 'new output files.\n'  
+print '\nDone.   Check \'pwd\' for', length, 'new output files.\n'
