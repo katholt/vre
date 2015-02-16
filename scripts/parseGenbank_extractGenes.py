@@ -1,8 +1,7 @@
 ##########################
 #dr.mark.schultz@gmail.com
 #github: schultzm
-#130215
-#Happy Friday the 13th!
+#170215
 ##########################
 
 from Bio import SeqIO
@@ -101,4 +100,3 @@ print "Files without sequence data (no genes to extract): ", ", ".join(files_wit
 print "Files not in DNA format (no DNA sequences to extract): ", ", ".join(files_not_in_DNA_format),"\n"
 print "Files failed parsing (e.g., ill-formatted): ", ", ".join(files_failed_parsing),"\n"
 print "End.\n"
-
