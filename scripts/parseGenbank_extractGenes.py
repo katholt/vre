@@ -1,7 +1,8 @@
 ##########################
 #dr.mark.schultz@gmail.com
 #github: schultzm
-#160215
+#130215
+#Happy Friday the 13th!
 ##########################
 
 from Bio import SeqIO
@@ -35,7 +36,7 @@ def extract_genes(file, outformat):
 				else:
 					alphabet_type = str(record.seq.alphabet)
 					if "DNA" in alphabet_type:
-						#c will be used to append a number to ensure non-unique file headers
+						#c will be used to append a number to ensure unique file headers
 						c = 1
 						#iterate through the record features (e.g., 'gene', 'CDS' etc.)
 						for i in range(0, len(record.features)):
@@ -96,8 +97,8 @@ for i in args.genbank:
 print "\n******** RUN LOG ********\n"
 
 print "Successfully parsed files: ", ", ".join(successfully_parsed_files),"\n"
-print "Files without sequence data: ", ", ".join(files_without_sequence_data),"\n"
-print "Files not in DNA format: ", ", ".join(files_not_in_DNA_format),"\n"
-print "Files failed parsing: ", ", ".join(files_failed_parsing),"\n"
+print "Files without sequence data (no genes to extract): ", ", ".join(files_without_sequence_data),"\n"
+print "Files not in DNA format (no DNA sequences to extract): ", ", ".join(files_not_in_DNA_format),"\n"
+print "Files failed parsing (e.g., ill-formatted): ", ", ".join(files_failed_parsing),"\n"
 print "End.\n"
 
