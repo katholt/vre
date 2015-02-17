@@ -1,11 +1,10 @@
-#author Mark B Schultz, email dr.mark.schultz@gmail.com
+##########################
+#dr.mark.schultz@gmail.com
 #github schultzm
-#date 12/02/14
+#date 18/02/15
 #requires python and biopython to run, can be installed by typing on the command line:
 #'sudo pip install biopython'
-
-######
-
+##########################
 
 #import the modules
 from Bio import Entrez
@@ -25,7 +24,7 @@ Entrez.email = args.user_email
 def get_genbank(extension):
 	for i in args.accession_ids:
 		try:
-			handle=Entrez.efetch(db='nucleotide', id=i, rettype='gb')
+			handle=Entrez.efetch(db='nucleotide', id=i, rettype='gbwithparts', retmode="text")
 # 			if handle != None:
 			with open(i+'.'+extension, 'w') as output_file:
 				print 'downloading '+i+' to '+i+'.'+extension
