@@ -1,7 +1,7 @@
 ##########################
 #dr.mark.schultz@gmail.com
 #github: schultzm
-#170215
+#180215
 ##########################
 
 from Bio import SeqIO
@@ -65,10 +65,10 @@ def extract_genes(file, outformat):
 								#thanks Peter for the blog
 								my_seq = feature.extract(record.seq)
 								my_seq_string = str(feature.extract(record.seq))
-								record_new = SeqRecord(Seq(my_seq_string, generic_dna), id=fasta_header, description="| 'Original seq coordinates in refseq "+accession_no+": "+str(my_seq_location)+".  Gene ["+gene_name+"]'.")
+								record_new = SeqRecord(Seq(my_seq_string, generic_dna), id=gene_name, description="| 'Original seq coordinates in refseq "+accession_no+": "+str(my_seq_location)+"'.")
 								outfile_name = fasta_header+"."+outformat
 								with open(outfile_name, 'w') as output_handle:
-									print "CDS '"+gene_name+"' from accesion "+accession_no+" written to '"+outfile_name+"'."
+									print unique_id_prefix+" gene '"+gene_name+"' written to '"+outfile_name+"'."
 									SeqIO.write(record_new, outfile_name, outformat)
 								c+=1
 						successfully_parsed_files.append(file)
@@ -100,3 +100,4 @@ print "Files without sequence data (no genes to extract): ", ", ".join(files_wit
 print "Files not in DNA format (no DNA sequences to extract): ", ", ".join(files_not_in_DNA_format),"\n"
 print "Files failed parsing (e.g., ill-formatted): ", ", ".join(files_failed_parsing),"\n"
 print "End.\n"
+
