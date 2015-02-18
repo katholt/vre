@@ -65,7 +65,7 @@ def extract_genes(file, outformat):
 								#thanks Peter for the blog
 								my_seq = feature.extract(record.seq)
 								my_seq_string = str(feature.extract(record.seq))
-								record_new = SeqRecord(Seq(my_seq_string, generic_dna), id=gene_name, description="| 'Original seq coordinates in refseq "+accession_no+": "+str(my_seq_location)+"'.")
+								record_new = SeqRecord(Seq(my_seq_string, generic_dna), id=fasta_header+"_"+gene_name, description="| 'Original seq coordinates in refseq "+accession_no+": "+str(my_seq_location)+"'.")
 								outfile_name = fasta_header+"."+outformat
 								with open(outfile_name, 'w') as output_handle:
 									print unique_id_prefix+" gene '"+gene_name+"' written to '"+outfile_name+"'."
