@@ -1,0 +1,72 @@
+---
+title: "temporal analysis"
+author: "Shu Mei Teo, Danielle Ingle, Paul McAdam"
+date: "20 February 2015"
+output: html_document
+---
+
+```{r}
+require(knitr)
+library(ape)
+library(ggplot2)
+
+opts_knit$set(root.dir="~/github/vre/Phylogenetics/temporal_analysis/")
+opts_chunk$set(fig.width=10, fig.height=10, fig.path='./Figs/',
+               echo=T, warning=FALSE, message=FALSE)
+```
+
+```{r get_root_tip_distances}
+
+RootTipDistances <- function(tree){
+  distances <- data.frame(diag(vcv.phylo(tree)))
+  colnames(distances) <- c('RootTipD')
+  distances.df <- data.frame('IsolateID'=rownames(distances), 'RootTipD'=distances$RootTipD)
+  return(distances.df)
+}
+
+```
+
+```{r regression_function}
+#http://stackoverflow.com/questions/7549694/ggplot2-adding-regression-line-equation-and-r2-on-graph
+lm_eqn = function(df){
+    dates=as.Date(df$date, format = '%d/%m/%Y')
+    m = lm(df$RootTipD ~ dates);
+    eq <- substitute(italic(r)^2~"="~r2, 
+         list( r2 = format(summary(m)$r.squared, digits = 3)))
+    as.character(as.expression(eq));                 
+}
+
+```
+
+```{r }
+
+pathogenPlot <- function(tree, lineage, ypos, dates){
+  #return ggplot, arguments are tree, lineage fot plot title, and postion of r squared annotation
+  distances <- RootTipDistances(tree)
+  dataf <- merge(distances, dates, by = 'IsolateID')
+  p = ggplot(data=dataf, aes(x=as.Date(date, format = '%d/%m/%Y'), y=RootTipD)) + geom_smooth(method='lm', formula = y ~ x, se=F) + geom_point() + ggtitle(paste('Scatter plot of isolation date and root to tip divergence with regression line for', lineage)) + xlab('Isolation Date') + ylab('Root to tip divergence') + annotate('text', x = as.Date('2009-01-12'), y = ypos, label = lm_eqn(dataf), parse=T)
+  
+  return(p)
+} 
+
+```
+
+Read in tree, root, and drop 4 strains
+```{r read_tree}
+vre.95.seq.tree <- read.tree('~/Desktop/VRE/post_gubbins/100_bs/95_seq_cons_RAxML_bipartitions._0.tree')
+
+labels<-vre.95.seq.tree$tip.label
+new_labels<-sapply(strsplit(labels,'_'),'[',1)
+vre.95.seq.tree$tip.label<-new_labels
+
+outgroups<-c('aus0009','aus0092','aus0101','aus0010')
+
+rooted <- root(vre.95.seq.tree, outgroups)
+rooted.minus.ogs <- drop.tip(rooted, outgroups)
+
+dates <- read.table('./dates.txt', sep=',', header=T) 
+
+pathogenPlot(tree = rooted.minus.ogs, lineage = 'VRE', dates = dates, ypos = 0.2)
+
+```
+
