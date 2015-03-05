@@ -34,8 +34,8 @@ meta<-read.csv("VRE_metadataInclClinical_12022015_0603_Outbkr.csv", header=T, ro
 
 ```{r results= "hide"}
 plotTree(clone1, infoFile = meta, infoCols = c("Name.code","CaseNumClones","Swab_date"), colourNodesBy = "community", tip.colour.cex= 4.0, tipColours = c("#ff7f00","#984ea3"),infoCex = 2)
-plotTree(clone1, infoFile = meta, infoCols = c("Name.code","CaseNumClones","Swab_date"), colourNodesBy = "community", tip.colour.cex= 4.0, tipColours = c("#ff7f00","#984ea3"), infoCex = 2,outputPDF="VRE_Clone1_Outbrk_Meta.pdf")
+plotTree(clone1, infoFile = meta, infoCols = c("Name.code","CaseNumClones","Swab_date"), colourNodesBy = "community", tip.colour.cex= 4.0, tipColours = c("#ff7f00","#984ea3"), infoCex = 1,outputPDF="VRE_Clone1_Outbrk_Meta.pdf")
 
 plotTree(clone2, infoFile = meta, infoCols = c("Name.code","CaseNumClones","Swab_date"), colourNodesBy = "community", tip.colour.cex= 4.0, tipColours = c("#ff7f00","#984ea3"), infoCex = 2,legend.pos = "bottomright")
-plotTree(clone2, infoFile = meta, infoCols = c("Name.code","CaseNumClones","Swab_date"), colourNodesBy = "community", tip.colour.cex= 4.0, tipColours = c("#ff7f00","#984ea3"), infoCex = 2,legend.pos = "bottomright",outputPDF="VRE_Clone2_Outbrk_Meta.pdf")
+plotTree(clone2, infoFile = meta, infoCols = c("Name.code","CaseNumClones","Swab_date"), colourNodesBy = "community", tip.colour.cex= 4.0, tipColours = c("#ff7f00","#984ea3"), infoCex = 1,legend.pos = "bottomright",outputPDF="VRE_Clone2_Outbrk_Meta.pdf")
 ```
