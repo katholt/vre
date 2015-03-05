@@ -1,0 +1,41 @@
+
+---
+title: "VRE clones Outbreaker Meta "
+author: "Danielle Ingle"
+date: " 6 March 2015"
+output: 
+  html_document:
+    pandoc_args: [
+      "+RTS",
+      "-K64m",
+      "-RTS",
+    ]
+---
+```{r global_opts}
+require('knitr')
+opts_knit$set(root.dir="/Users/danielleingle/Documents/VRE/")
+opts_chunk$set(fig.width=10, fig.height=10, fig.path="/Users/danielleingle/Documents/VRE/", echo=T, warning=FALSE, message=FALSE)
+```
+
+```{r load and source}
+library(ape)
+#library(RColorBrewer)
+source('~/Documents/Programs/holtlab/Rcode/plotTree.R')
+```
+
+```{r read in mpr clone trees}
+clone1<-read.tree("RAxML_bipartitions.Gp1_95com95_0_mpr.tree")
+clone2<-read.tree("RAxML_bipartitions.Gp2_95com95_0_mpr.tree")
+```
+
+```{r read in meta file}
+meta<-read.csv("VRE_metadataInclClinical_12022015_0603_Outbkr.csv", header=T, row.names=1)
+```
+
+```{r results= "hide"}
+plotTree(clone1, infoFile = meta, infoCols = c("Name.code","CaseNumClones","Swab_date"), colourNodesBy = "community", tip.colour.cex= 4.0, tipColours = c("#ff7f00","#984ea3"),infoCex = 2)
+plotTree(clone1, infoFile = meta, infoCols = c("Name.code","CaseNumClones","Swab_date"), colourNodesBy = "community", tip.colour.cex= 4.0, tipColours = c("#ff7f00","#984ea3"), infoCex = 2,outputPDF="VRE_Clone1_Outbrk_Meta.pdf")
+
+plotTree(clone2, infoFile = meta, infoCols = c("Name.code","CaseNumClones","Swab_date"), colourNodesBy = "community", tip.colour.cex= 4.0, tipColours = c("#ff7f00","#984ea3"), infoCex = 2,legend.pos = "bottomright")
+plotTree(clone2, infoFile = meta, infoCols = c("Name.code","CaseNumClones","Swab_date"), colourNodesBy = "community", tip.colour.cex= 4.0, tipColours = c("#ff7f00","#984ea3"), infoCex = 2,legend.pos = "bottomright",outputPDF="VRE_Clone2_Outbrk_Meta.pdf")
+```
