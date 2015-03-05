@@ -1,0 +1,97 @@
+---
+title: "outbreaker-vre"
+author: "Paul McAdam"
+date: "5 March 2015"
+output: html_document
+---
+
+```{r}
+library(outbreaker)
+library(ggplot2)
+library(ape)
+library(adegenet)
+```
+
+```{r run_outbreaker}
+
+runOutbreaker <- function(outbreak.DNA, outbreak.dates, gen.time){
+  #read in DNA
+  obk.DNA<-read.FASTA(outbreak.DNA)
+
+  #read in dates
+  obk.dates <- read.table(outbreak.dates,header=F, sep=',', na.strings = '')
+  obk.dates <- as.Date(obk.dates$V2, format = '%d/%m/%Y')
+
+  #run outbreaker
+  obkRes<- outbreaker.parallel(,n.runs = 4, parallel = F, dna = obk.DNA, dates = obk.dates, init.tree='random', mut.model=1, init.mu1 = 1e-4, w.dens=gen.time)
+  return(obkRes)
+}
+```
+
+
+```{r read_in_files}
+
+gp1.dna <- '95com_variant_OG_removed_Gp1_snps_CP006620_CP006620_alleles_var_1outgroup_17strains_var_var_var_cons0.95.mfasta'
+gp1.dates <- 'Gp1_dates.csv'
+
+gp2.dna <- '95com95cons_variant_OG_removed_Gp2_allsnps_CP006620_CP006620_alleles_var_1outgroup_11strains_var_var_var_cons0.95.mfasta'
+gp2.dates <- 'Gp2_dates.csv'
+
+w <- c(0,dexp(1:120, rate=1/80))
+```
+
+```{r run_outbreaker}
+gp1.obkRes <- runOutbreaker(gp1.dna, gp1.dates, w)
+gp2.obkRes <- runOutbreaker(gp2.dna, gp2.dates, w)
+
+```
+
+
+
+```{r assess_convergence}
+
+outbreakerConvergence <- function(obkRes, burnin){
+  #returns trace minus burnin, and anova results for testinf convergence of chains
+  require(reshape)
+  require(ggplot2)
+  require(mgcv)
+  x <- obkRes$chains
+  x$run <- factor(x$run)
+  p <- ggplot(x[x$step>burnin,], aes(x=step)) + geom_line(aes(y=post, colour = run)) + labs(title="Trace of log-posterior", y="log-posterior")
+  anova.res <- anova(lm(post~run, data = x[x$step>burnin,]))
+  res.list <- list(p, anova.res)
+  return(res.list)
+  }
+
+outbreakerNetworks <- function(obkRes, threshold, burnin){
+  require(igraph)
+  require(adegenet)
+  require(reshape)
+  require(ggplot2)
+  x <- obkRes$chains
+  x$run <- factor(x$run)
+  x <- x[x$step>burnin,]
+  
+  Tinf <- x[x$step>burnin, c(1,ncol(x),grep("Tinf",names(x)))]
+  Tinf.orig <- x[x$step>burnin, grep("Tinf",names(x))]
+  Tinf <- melt(Tinf, id=1:2)
+  names(Tinf)[3:4] <- c("case","date")
+  Tinf$case <- sub("Tinf_","Case ", Tinf$case)
+  Tinf$case <- factor(Tinf$case, levels = paste("Case",1:length(obkRes$idx.dna)))
+  infect.time <- ggplot(data=Tinf) + geom_boxplot(aes(x=case,y=date,fill=case), alpha=.5) + coord_flip() + labs(y="Infection date", x="", title="Distribution of infection dates")
+  infect.time <- infect.time + guides(fill=FALSE)  
+  
+  case.color <- any2col(apply(Tinf.orig,2,mean), col.pal=spectral)
+  case.size <- 10+apply(get.R(obkRes, burnin=burnin),2,mean)*5
+
+  g<- transGraph(obkRes, burnin=burnin, thres=threshold)
+  #g <- get.tTree(obkRes, burnin = burnin)
+  #consensus.tree <- plot(g, edge.curved=T, vertex.color = case.color$col, vertex.size=case.size, edge.label="", main="Consensus ancestries")
+  #legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt, title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
+  
+  res.list <- list('infection.dates'=infect.time, 'consensus.tree' = g)
+  return(res.list)
+}
+
+
+```
