@@ -5,14 +5,14 @@ date: "5 March 2015"
 output: html_document
 ---
 
-```{r}
+```{r, echo=FALSE}
 library(outbreaker)
 library(ggplot2)
 library(ape)
 library(adegenet)
 ```
 
-```{r run_outbreaker}
+```{r run_outbreaker_function, echo=FALSE}
 
 runOutbreaker <- function(outbreak.DNA, outbreak.dates, gen.time){
   #read in DNA
@@ -29,7 +29,7 @@ runOutbreaker <- function(outbreak.DNA, outbreak.dates, gen.time){
 ```
 
 
-```{r read_in_files}
+```{r read_in_files, echo=FALSE}
 
 gp1.dna <- '95com_variant_OG_removed_Gp1_snps_CP006620_CP006620_alleles_var_1outgroup_17strains_var_var_var_cons0.95.mfasta'
 gp1.dates <- 'Gp1_dates.csv'
@@ -40,7 +40,7 @@ gp2.dates <- 'Gp2_dates.csv'
 w <- c(0,dexp(1:120, rate=1/80))
 ```
 
-```{r run_outbreaker}
+```{r run_outbreaker, echo=FALSE}
 gp1.obkRes <- runOutbreaker(gp1.dna, gp1.dates, w)
 gp2.obkRes <- runOutbreaker(gp2.dna, gp2.dates, w)
 
@@ -48,7 +48,7 @@ gp2.obkRes <- runOutbreaker(gp2.dna, gp2.dates, w)
 
 
 
-```{r assess_convergence}
+```{r assess_convergence, echo=FALSE}
 
 outbreakerConvergence <- function(obkRes, burnin){
   #returns trace minus burnin, and anova results for testinf convergence of chains
@@ -68,6 +68,7 @@ outbreakerNetworks <- function(obkRes, threshold, burnin){
   require(adegenet)
   require(reshape)
   require(ggplot2)
+  
   x <- obkRes$chains
   x$run <- factor(x$run)
   x <- x[x$step>burnin,]
@@ -84,14 +85,48 @@ outbreakerNetworks <- function(obkRes, threshold, burnin){
   case.color <- any2col(apply(Tinf.orig,2,mean), col.pal=spectral)
   case.size <- 10+apply(get.R(obkRes, burnin=burnin),2,mean)*5
 
-  g<- transGraph(obkRes, burnin=burnin, thres=threshold)
-  #g <- get.tTree(obkRes, burnin = burnin)
-  #consensus.tree <- plot(g, edge.curved=T, vertex.color = case.color$col, vertex.size=case.size, edge.label="", main="Consensus ancestries")
-  #legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt, title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
+  g <- transGraph(obkRes, burnin=burnin, thres=threshold)
+  g0 <- transGraph(obkRes, burnin=burnin, thres=0, annot='')
   
-  res.list <- list('infection.dates'=infect.time, 'consensus.tree' = g)
+  #g <- get.tTree(obkRes, burnin = burnin)
+  plot(g, edge.curved=T, vertex.color = case.color$col, vertex.size=case.size, edge.label="", main="Consensus ancestries")
+  legend("bottomleft", col=case.color$leg.col, leg=case.color$leg.txt, title="Mean infection date", pch=20, pt.cex=3, inset=-.1)
+  cons.tree <- recordPlot()
+  
+  all.ancestries <- plot(g0, layout=layout.auto, edge.curved=FALSE)
+  title("Ancestries with support >0% ")
+  
+  all.ancestries <- recordPlot()
+  
+  r.num <- get.R(obkRes, burnin=burnin)
+  case.r <- data.frame(case=factor(as.vector(col(r.num)), levels=as.character(1:30)),r.num=as.vector(r.num))
+  r.plot <- ggplot(data=case.r, aes(x=case, y=r.num)) + geom_boxplot(aes(colour=case))
+  r.plot <- r.plot + geom_boxplot(aes(colour=case)) + guides(colour=FALSE)
+  r.plot <- r.plot + labs(title="Posterior estimates of effective reproduction numbers") + ylab('R')
+  
+  res.list <- list('infection.dates'=infect.time, 'consensus.tree' = cons.tree, 'g0' = all.ancestries, 'r.plot' = r.plot)
   return(res.list)
 }
 
+```
 
+```{r get_results, fig.show='hide'}
+gp1.plots<-outbreakerNetworks(obkRes = gp1.obkRes, threshold = 0.4, burnin = 2e4)
+gp2.plots<-outbreakerNetworks(obkRes = gp2.obkRes, threshold = 0.4, burnin = 2e4)
+```
+
+```{r save_plots, fig.path='./', echo=FALSE}
+
+outbreakerConvergence(gp1.obkRes,2e4)
+outbreakerConvergence(gp2.obkRes,2e4)
+
+gp1.plots$g0
+gp1.plots$consensus.tree
+gp1.plots$infection.dates
+gp1.plots$r.plot
+
+gp2.plots$g0
+gp2.plots$consensus.tree
+gp2.plots$infection.dates
+gp2.plots$r.plot
 ```
