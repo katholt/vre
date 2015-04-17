@@ -1,0 +1,5 @@
+Sample	ST	atpA	ddl	gdh	purK	gyd	pstS	adk	mismatches	uncertainty	depth	maxMAF
+CP003351	17	1	1	1	1	1	1	1	0	-	133.038142857	0
+CP003351_full	17	1	1	1	1	1	1	1	0	-	69.745	0
+CP006620	203	15	1	1	1	1	20	1	0	-	130.591285714	0
+CP006620_full	203	15	1	1	1	1	20	1	0	-	70.6691428571	0

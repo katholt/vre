@@ -1,0 +1,2 @@
+Sample	ST	atpA	ddl	gdh	purK	gyd	pstS	adk	mismatches	uncertainty	depth	maxMAF	Aac6-Ii_AGly	MsrC_MLS	TetM_Tet	VanB_Gly	VanH-B_Gly	VanR-B_Gly	VanS-B_Gly	VanW-B_Gly	VanX-B_Gly	VanY-B_Gly
+CP006620	203	15	1	1	1	1	20	1	0	-	130.591285714	0	Aac6-Ii_591*	MsrC_304*	TetM_831*	VanB_1060*	VanH-B_552*	VanR-B_1472	VanS-B_1672*	VanW-B_487*	VanX-B_1191	VanY-B_1502
