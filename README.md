@@ -1,4 +1,4 @@
 # vre
 VRE analysis project
 
-Testing
+Recombination detection within the VRE groups from 2014
